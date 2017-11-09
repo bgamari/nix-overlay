@@ -4,7 +4,7 @@ rec {
   kicad-master = super.kicad.overrideAttrs (oldAttrs: {
     name = "kicad-master";
     version = "master";
-    srcs = [ 
+    srcs = [
       (self.pkgs.fetchgit {
         url = "https://git.launchpad.net/kicad";
         rev = "e5c4cfc3b01724de705609c901575b40cd3958b4";
@@ -19,17 +19,22 @@ rec {
       })
     ];
     sourceRoot = "kicad";
-    buildInputs = oldAttrs.buildInputs ++ [ self.pkgs.ngspice self.pkgs.glm ];
-    cmakeFlags = oldAttrs.cmakeFlags + "-DKICAD_SPICE=ON";
+    nativeBuildInputs = oldAttrs.nativeBuildInputs ++ [ self.pkgs.swig ];
+    buildInputs = oldAttrs.buildInputs ++ [ self.pkgs.ngspice self.pkgs.glm self.pkgs.python ];
+    cmakeFlags = oldAttrs.cmakeFlags + ''
+      -DKICAD_SPICE=ON
+      -DKICAD_SCRIPTING=ON
+      -DKICAD_SCRIPTING_MODULES=ON
+    '';
     postInstall = ''
-      popd                                          
-                                                    
+      popd
+
       chmod -R ug+w .
-      pushd kicad-library-*                         
-      cmake -DCMAKE_INSTALL_PREFIX=$out             
-      make $MAKE_FLAGS                              
-      make install                                  
-      popd                                          
+      pushd kicad-library-*
+      cmake -DCMAKE_INSTALL_PREFIX=$out
+      make $MAKE_FLAGS
+      make install
+      popd
     '';
   });
 
