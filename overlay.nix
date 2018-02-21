@@ -42,5 +42,6 @@ rec {
     nativeBuildInputs = with super; [ pkgconfig libxml2 imagemagick gettext ];
     buildInputs = with super; [ glib gtk3 curl python3 python3Packages.requests libnotify libconfig libsoup ];
   };
-}
 
+  cabal-install = import ./cabal.nix self super;
+}
