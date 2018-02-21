@@ -1,43 +1,7 @@
 self: super:
 
 rec {
-  kicad-master = super.kicad.overrideAttrs (oldAttrs: {
-    name = "kicad-master";
-    version = "master";
-    srcs = [
-      (self.pkgs.fetchgit {
-        url = "https://git.launchpad.net/kicad";
-        rev = "e5c4cfc3b01724de705609c901575b40cd3958b4";
-        sha256 = "1hb4hj4rx29lab0gkgw02df6snl3k2bk5aizc14ali6x8cvrc1cj";
-        name = "kicad";
-      })
-      (self.pkgs.fetchgit {
-        url = "git@github.com:KiCad/kicad-library.git";
-        rev = "5672f4347a045362986824926eff7bbcbb289080";
-        sha256 = "14agy64rl63hpsdn9hjhl5j8hzh28fma018w1sfxgnax164nywz1";
-        name = "kicad-library-head";
-      })
-    ];
-    sourceRoot = "kicad";
-    nativeBuildInputs = oldAttrs.nativeBuildInputs ++ [ self.pkgs.swig ];
-    buildInputs = oldAttrs.buildInputs ++ [ self.pkgs.ngspice self.pkgs.glm self.pkgs.python ];
-    cmakeFlags = oldAttrs.cmakeFlags + ''
-      -DKICAD_SPICE=ON
-      -DKICAD_SCRIPTING=ON
-      -DKICAD_SCRIPTING_MODULES=ON
-    '';
-    postInstall = ''
-      popd
-
-      chmod -R ug+w .
-      pushd kicad-library-*
-      cmake -DCMAKE_INSTALL_PREFIX=$out
-      make $MAKE_FLAGS
-      make install
-      popd
-    '';
-  });
-
+  inherit (import ./kicad.nix self super) kicad-master ngspice;
   inkscape-master = super.inkscape.overrideAttrs (oldAttrs: {
     name = "inkscape-master";
     version = "master";
@@ -50,8 +14,33 @@ rec {
     sourceRoot = "inkscape";
   });
 
-  ngspice = super.ngspice.overrideAttrs (oldAttrs: {
-    configureFlags = oldAttrs.configureFlags ++ [ "--with-ngshared" ];
+  emacs26 = super.emacs.overrideAttrs (oldAttrs: {
+    src = self.fetchurl {
+      url = "ftp://alpha.gnu.org/gnu/emacs/pretest/emacs-26.0.91.tar.xz";
+      sha256 = "1841hcqvwnh812gircpv2g9fqarlirh7ixv007hkglqk7qsvpxii";
+    };
+    patches = [];
   });
+
+  pandoc = super.haskellPackages.callHackage "pandoc" "2.0.1" {};
+
+  # ESP32
+  esp32-toolchain = super.callPackage (import esp32/espressif-toolchain.nix) { };
+  inherit (esp32-toolchain) gcc-xtensa binutils-xtensa;
+  #espressif-toolchain = super.callPackage (import esp32/crosstool-ng-esp32.nix) { };
+  micropython-esp32 = super.callPackage (import esp32/micropython-esp32.nix) { };
+
+  srain = super.stdenv.mkDerivation {
+    name = "srain";
+    src = super.fetchFromGitHub {
+      owner = "SilverRainZ";
+      repo = "srain";
+      rev = "0.06.3";
+      sha256 = null;
+    };
+    configureFlags = [ "--prefix=$(out)" "--config-dir=$(out)/etc" ];
+    nativeBuildInputs = with super; [ pkgconfig libxml2 imagemagick gettext ];
+    buildInputs = with super; [ glib gtk3 curl python3 python3Packages.requests libnotify libconfig libsoup ];
+  };
 }
 
