@@ -2,6 +2,25 @@ self: super:
 
 rec {
   inherit (import ./kicad.nix self super) kicad-symbols;
+
+  slic3r = super.slic3r.overrideAttrs (oldAttrs: {
+    version = "HEAD";
+    src = self.fetchFromGitHub {
+      owner = "alexrj";
+      repo = "Slic3r";
+      rev = "master";
+      sha256 = "0dvg1iaggm8c0qh688c03m4jwn90y9fvkh7jjkrpbam0dll94bp1";
+    };
+    patches = [ ./slic3r-fix-include.patch ];
+    buildInputs = with self.perlPackages; [ perl self.makeWrapper self.which self.boost
+      EncodeLocale MathClipper ExtUtilsXSpp threads
+      MathConvexHullMonotoneChain MathGeometryVoronoi MathPlanePath Moo
+      IOStringy ClassXSAccessor Wx GrowlGNTP NetDBus ImportInto XMLSAX
+      ExtUtilsMakeMaker OpenGL WxGLCanvas ModuleBuild LWP DevelChecklib
+      locallib
+    ];
+  });
+
   inkscape-master = super.inkscape.overrideAttrs (oldAttrs: {
     name = "inkscape-master";
     version = "master";
