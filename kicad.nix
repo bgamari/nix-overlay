@@ -1,47 +1,41 @@
 self: super:
 
 rec {
-  kicad-master = super.kicad.overrideAttrs (oldAttrs: {
-    name = "kicad-master";
-    version = "master";
-    srcs = [
-      (self.pkgs.fetchgit {
-        url = "https://git.launchpad.net/kicad";
-        rev = "48388695ae22195bbcc2a9a8d14e96ccfb508ec0";
-        sha256 = "0wy0y40ba252draf6x3fr8aa5804m431kn252srsnfsfqif4sw6g";
-        name = "kicad";
-      })
-      (self.pkgs.fetchFromGitHub {
-        owner = "KiCad";
-        repo = "kicad-library";
-        rev = "5672f4347a045362986824926eff7bbcbb289080";
-        sha256 = "14agy64rl63hpsdn9hjhl5j8hzh28fma018w1sfxgnax164nywz1";
-        name = "kicad-library-head";
-      })
-    ];
-    sourceRoot = "kicad";
-    nativeBuildInputs = oldAttrs.nativeBuildInputs ++ [ self.pkgs.swig ];
-    buildInputs = oldAttrs.buildInputs ++ [ self.pkgs.ngspice self.pkgs.glm self.pkgs.python ];
-    cmakeFlags = oldAttrs.cmakeFlags + ''
-      -DKICAD_SPICE=ON
-      -DKICAD_SCRIPTING=ON
-      -DKICAD_SCRIPTING_MODULES=ON
-    '';
-    postInstall = ''
-      popd
+  kicad-symbols = super.stdenv.mkDerivation {
+    name = "kicad-symbols";
+    nativeBuildInputs = [ self.cmake ];
+    src = self.pkgs.fetchFromGitHub {
+      owner = "KiCad";
+      repo = "kicad-symbols";
+      rev = "08b67f0020ea9f703adc7f45a921df9d0f1106bd";
+      sha256 = "1qfmw75aqr6kpd30lkyshc500vz2xf6gv1naznqw396nra2nc7n0";
+      name = "kicad-symbols";
+    };
+  };
 
-      chmod -R ug+w .
-      pushd kicad-library-*
-      cmake -DCMAKE_INSTALL_PREFIX=$out
-      make $MAKE_FLAGS
-      make install
-      popd
-    '';
-  });
+  kicad-packages3D = super.stdenv.mkDerivation {
+    name = "kicad-packages3D";
+    nativeBuildInputs = [ self.cmake ];
+    src = self.pkgs.fetchFromGitHub {
+      owner = "KiCad";
+      repo = "kicad-packages3D";
+      rev = "48fcd1fa6ab91ffb1067776972a5be191adcf8d0";
+      sha256 = "0sra2vn37ppw8x7dza3qb9ws4drdc1927h94ijbp91gamdak5sbj";
+      name = "kicad-packages3D";
+    };
+  };
 
-  ngspice = super.ngspice.overrideAttrs (oldAttrs: {
-    configureFlags = oldAttrs.configureFlags ++ [ "--with-ngshared" ];
-  });
+  kicad-templates = super.stdenv.mkDerivation {
+    name = "kicad-templates";
+    nativeBuildInputs = [ self.cmake ];
+    src = self.pkgs.fetchFromGitHub {
+      owner = "KiCad";
+      repo = "kicad-templates";
+      rev = "49661c89c7e21073f0c29caaadaf20ac3733dbba";
+      sha256 = "0xg73q21f1w79q8vx8lvx09qqj396cynpdrmf6kgkcp7yjp7xz9x";
+      name = "kicad-templates";
+    };
+  };
 
   wx-form-builder = super.callPackage (import ./wx-form-builder.nix) { };
   ticpp = super.callPackage (import ./ticpp.nix) { };

@@ -1,7 +1,7 @@
 self: super:
 
 rec {
-  inherit (import ./kicad.nix self super) kicad-master ngspice;
+  inherit (import ./kicad.nix self super) kicad-symbols;
   inkscape-master = super.inkscape.overrideAttrs (oldAttrs: {
     name = "inkscape-master";
     version = "master";
