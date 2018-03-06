@@ -14,6 +14,15 @@ rec {
     sourceRoot = "inkscape";
   });
 
+  openscad = super.openscad.overrideAttrs (oldAttrs: {
+    src = super.fetchFromGitHub {
+      owner = "openscad";
+      repo = "openscad";
+      rev = "8a2d62d2e5216f0954139a89a201d998ad2268f8";
+      sha256 = null;
+    };
+  });
+
   emacs26 = super.emacs.overrideAttrs (oldAttrs: {
     src = self.fetchurl {
       url = "ftp://alpha.gnu.org/gnu/emacs/pretest/emacs-26.0.91.tar.xz";
