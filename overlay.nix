@@ -78,4 +78,6 @@ rec {
       ipython numpy matplotlib scipy pygobject3 pyqt5
     ]);
   };
+
+  FlatCAM = self.callPackage (import ./FlatCAM.nix) { };
 }
