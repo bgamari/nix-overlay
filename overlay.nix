@@ -75,9 +75,10 @@ rec {
 
   ben = {
     scipyEnv = self.python3.withPackages (ps: with ps; [
-      ipython numpy matplotlib scipy pygobject3 pyqt5
+      ipython numpy matplotlib scipy pygobject3 pyqt5 jupyter
     ]);
   };
 
   FlatCAM = self.callPackage (import ./FlatCAM.nix) { };
+
 }
