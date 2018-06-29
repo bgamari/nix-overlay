@@ -63,7 +63,7 @@ rec {
     src = super.fetchFromGitHub {
       owner = "SilverRainZ";
       repo = "srain";
-      rev = "0.06.3";
+      rev = "0.06.4";
       sha256 = null;
     };
     configureFlags = [ "--prefix=$(out)" "--config-dir=$(out)/etc" ];
