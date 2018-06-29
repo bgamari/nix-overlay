@@ -52,8 +52,6 @@ rec {
     patches = [];
   });
 
-  pandoc = super.haskellPackages.callHackage "pandoc" "2.0.1" {};
-
   # ESP32
   esp32-toolchain = super.callPackage (import esp32/espressif-toolchain.nix) { };
   inherit (esp32-toolchain) gcc-xtensa binutils-xtensa;
