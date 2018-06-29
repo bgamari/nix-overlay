@@ -10,8 +10,8 @@ rec {
     src = self.fetchFromGitHub {
       owner = "alexrj";
       repo = "Slic3r";
-      rev = "master";
-      sha256 = "0dvg1iaggm8c0qh688c03m4jwn90y9fvkh7jjkrpbam0dll94bp1";
+      rev = "8a93fbbd0c6ae6742997ca32d363719e3980d613";
+      sha256 = "1djryy26q9dcp94g452qcvrq6jczymjcq7a5qz4jpqkjpgzwglzb";
     };
     patches = [ ./slic3r-fix-include.patch ];
     buildInputs = with self.perlPackages; [ perl self.makeWrapper self.which self.boost
