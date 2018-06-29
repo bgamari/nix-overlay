@@ -73,7 +73,7 @@ rec {
     buildInputs = with super; [ glib gtk3 curl python3 python3Packages.requests libnotify libconfig libsoup ];
   };
 
-  cabal-install = import ./cabal.nix self super;
+  cabal-install-head = import ./cabal.nix self super;
 
   ben = {
     scipyEnv = self.python3.withPackages (ps: with ps; [
