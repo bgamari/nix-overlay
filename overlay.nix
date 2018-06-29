@@ -3,6 +3,8 @@ self: super:
 rec {
   inherit (import ./kicad.nix self super) kicad-symbols;
 
+  git-archive-all = super.callPackage ./git-archive-all {};
+
   uhk-agent = super.callPackage ./uhk-agent {};
 
   slic3r = super.slic3r.overrideAttrs (oldAttrs: {
