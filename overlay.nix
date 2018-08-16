@@ -74,6 +74,15 @@ rec {
     buildInputs = with super; [ glib gtk3 curl python3 python3Packages.requests libnotify libconfig libsoup ];
   };
 
+  ward = 
+    let src = self.fetchFromGitHub {
+          owner = "evincarofautumn";
+          repo = "Ward";
+          rev = "05b02cf2a617886d5c064648d2ce415aa9043c86";
+          sha256 = null;
+        };
+    in self.haskellPackages.callCabal2nix "ward" src {};
+
   cabal-install-head = import ./cabal.nix self super;
 
   ben = {
