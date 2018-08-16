@@ -12,13 +12,14 @@ rec {
     src = self.fetchFromGitHub {
       owner = "alexrj";
       repo = "Slic3r";
-      rev = "8a93fbbd0c6ae6742997ca32d363719e3980d613";
-      sha256 = "1djryy26q9dcp94g452qcvrq6jczymjcq7a5qz4jpqkjpgzwglzb";
+      rev = "4f3e89a871a03f00c97354557676270de7605074";
+      sha256 = "026yrfvmb0g20wa7xql33mzjj4aal4n4whqa83phc7m5299imvri";
     };
     patches = [ ./slic3r-fix-include.patch ];
     buildInputs = with self.perlPackages; [ perl self.makeWrapper self.which self.boost
-      EncodeLocale MathClipper ExtUtilsXSpp threads
+      ExtUtilsCppGuess ModuleBuildWithXSpp EncodeLocale MathClipper ExtUtilsXSpp threads
       MathConvexHullMonotoneChain MathGeometryVoronoi MathPlanePath Moo
+      ExtUtilsTypemapsDefault
       IOStringy ClassXSAccessor Wx GrowlGNTP NetDBus ImportInto XMLSAX
       ExtUtilsMakeMaker OpenGL WxGLCanvas ModuleBuild LWP DevelChecklib
       locallib
