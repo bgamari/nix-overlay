@@ -1,6 +1,12 @@
 self: super:
 
 rec {
+  kicad-unstable = super.kicad.overrideAttrs (oldAttrs: {
+    src = /home/ben/kicad-source-mirror;
+    cmakeFlags = oldAttrs.cmakeFlags ++
+      [ "-DCMAKE_CXX_FLAGS=-I${super.pythonPackages.wxPython30}/include/wx-3.0" ];
+  });
+
   kicad-symbols = super.stdenv.mkDerivation {
     name = "kicad-symbols";
     nativeBuildInputs = [ self.cmake ];

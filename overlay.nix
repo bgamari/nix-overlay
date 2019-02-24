@@ -1,19 +1,38 @@
 self: super:
 
-rec {
-  inherit (import ./kicad.nix self super) kicad-symbols;
+let 
+  unstable = 
+    let
+      src = self.fetchFromGitHub {
+        owner = "nixos";
+        repo = "nixpkgs";
+        rev = "2428f5dda13475afba2dee93f4beb2bd97086930";
+        sha256 = null;
+      };
+    in import src {};
+
+in rec {
+  inherit (import ./kicad.nix self super) kicad-symbols kicad-unstable;
+
+  inherit (unstable) emacs26; 
+  emacs = emacs26;
+
+  # bump to 0.26.2
+  notmuch = super.callPackage ./nixpkgs/pkgs/applications/networking/mailreaders/notmuch {};
 
   git-archive-all = super.callPackage ./git-archive-all {};
 
   uhk-agent = super.callPackage ./uhk-agent {};
+
+  lattice-icecube = super.pkgsi686Linux.callPackage ./lattice-icecube {};
 
   slic3r = super.slic3r.overrideAttrs (oldAttrs: {
     version = "HEAD";
     src = self.fetchFromGitHub {
       owner = "alexrj";
       repo = "Slic3r";
-      rev = "4f3e89a871a03f00c97354557676270de7605074";
-      sha256 = "026yrfvmb0g20wa7xql33mzjj4aal4n4whqa83phc7m5299imvri";
+      rev = "203f7927feeb796715044e80862908407e9ff167";
+      sha256 = "10jjxiri7l5kxd30cn6vqhm6f13sp5r2zxiv4khmqgykxcrmsc1b";
     };
     patches = [ ./slic3r-fix-include.patch ];
     buildInputs = with self.perlPackages; [ perl self.makeWrapper self.which self.boost
@@ -47,20 +66,6 @@ rec {
     };
   });
 
-  emacs26 = super.emacs.overrideAttrs (oldAttrs: {
-    src = self.fetchurl {
-      url = "ftp://alpha.gnu.org/gnu/emacs/pretest/emacs-26.0.91.tar.xz";
-      sha256 = "1841hcqvwnh812gircpv2g9fqarlirh7ixv007hkglqk7qsvpxii";
-    };
-    patches = [];
-  });
-
-  # ESP32
-  esp32-toolchain = super.callPackage (import esp32/espressif-toolchain.nix) { };
-  inherit (esp32-toolchain) gcc-xtensa binutils-xtensa;
-  #espressif-toolchain = super.callPackage (import esp32/crosstool-ng-esp32.nix) { };
-  micropython-esp32 = super.callPackage (import esp32/micropython-esp32.nix) { };
-
   srain = super.stdenv.mkDerivation {
     name = "srain";
     src = super.fetchFromGitHub {
@@ -87,7 +92,7 @@ rec {
 
   ben = {
     scipyEnv = self.python3.withPackages (ps: with ps; [
-      ipython numpy matplotlib scipy pygobject3 pyqt5 jupyter
+      ipython numpy matplotlib scipy pygobject3 pyqt5 jupyter pandas sympy pint
     ]);
   };
 
